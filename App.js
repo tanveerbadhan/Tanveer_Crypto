@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import TabNavigator from "./navigation/TabNavigator";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const App = () => {
+    const [loaded, error] = useFonts({
+        "Poppins-Light": require("./assets/fonts/Poppins-Light.ttf"),
+        "Poppins-Medium": require("./assets/fonts/Poppins-Medium.ttf"),
+        "Poppins-Bold": require("./assets/fonts/Poppins-Bold.ttf"),
+        "Poppins-Black": require("./assets/fonts/Poppins-Black.ttf"),
+    });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
+    if (!loaded && !error) {
+        return null;
+    }
+
+    return (
+        <NavigationContainer>
+            <TabNavigator />
+        </NavigationContainer>
+    );
+};
+
+export default App;
