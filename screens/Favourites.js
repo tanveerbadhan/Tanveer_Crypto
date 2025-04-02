@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { FONT_WEIGHT } from "../styles/GlobalStyles";
 import CustomText from "../components/CustomText";
-import { SERVICES } from "../services/services";
+import { SERVICES } from "../services";
 import { CryptoCard } from "../components";
 
 const Favourites = ({ navigation }) => {

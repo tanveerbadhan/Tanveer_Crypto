@@ -1,19 +1,32 @@
-export const fetchRequest = async (url, method = 'GET', body = null, headers = {}, options = {}) => {
-    const config = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers
-      },
-      ...options
-    };
-  
+import { fetchRequest } from "./utils";
+import { URLS } from "./endPoints";
+
+const fetchCryptoList = async (page = 0, limit = 15) => {
+    const url = URLS.CRYPTO_LIST + `/?start=${page * limit}&limit=${limit}`;
     try {
-      const response = await fetch(url, config);
-      const data = await response.json();
-      return data;
+        const response = await fetchRequest(url);
+        return response?.data;
     } catch (error) {
-      console.error('Fetch error:', error);
-      throw error;
+        console.log("Error fetching crypto list:", error);
+        return null;
     }
-  }
+};
+
+const fetchCrypto = async (id = "") => {
+    const url = URLS.CRYPTO + id;
+    try {
+        const response = await fetchRequest(url);
+        if (response?.length > 0) {
+            return response[0];
+        }
+        return null;
+    } catch (error) {
+        console.log("Error fetching crypto:", error);
+        return null;
+    }
+};
+
+export const SERVICES = {
+    fetchCryptoList,
+    fetchCrypto,
+};

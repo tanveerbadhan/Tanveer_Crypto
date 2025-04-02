@@ -3,7 +3,7 @@ import { StyleSheet, FlatList, View, RefreshControl, ActivityIndicator } from "r
 import CustomText from "../components/CustomText";
 import { FONT_WEIGHT } from "../styles/GlobalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SERVICES } from "../services/services";
+import { SERVICES } from "../services";
 import { debounce } from "../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { CryptoCard } from "../components";

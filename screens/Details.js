@@ -1,28 +1,25 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { SERVICES } from "../services";
+import { CustomText } from "../components";
 
-const Details = () => {
+const Details = ({ route }) => {
+    const { id } = route?.params ?? {};
     const [isFavorite, setIsFavorite] = useState(false);
-    const bitcoinData = {
-        id: "90",
-        symbol: "BTC",
-        name: "Bitcoin",
-        nameid: "bitcoin",
-        rank: 1,
-        price_usd: "85991.58",
-        percent_change_24h: "1.21",
-        percent_change_1h: "-0.43",
-        percent_change_7d: "-2.35",
-        price_btc: "1.00",
-        market_cap_usd: "1706284683642.80",
-        volume24: 31919257596.6664,
-        volume24a: 25202512215.0486,
-        csupply: "19842462.00",
-        tsupply: "19842462",
-        msupply: "21000000",
+    const [isLoading, setIsLoading] = useState(true);
+    const [bitcoinData, setBitcoinData] = useState(null);
+
+    useEffect(() => {
+        fetchCrypto();
+    }, []);
+
+    const fetchCrypto = async () => {
+        const data = await SERVICES.fetchCrypto(id);
+        setBitcoinData(data);
+        setIsLoading(false);
     };
 
     const formatNumber = (num) => {
@@ -50,8 +47,30 @@ const Details = () => {
 
     const toggleFavorite = () => {
         setIsFavorite(!isFavorite);
-        // Here you would typically also update your global state or database
     };
+
+    if (isLoading) {
+        return (
+            <LinearGradient colors={["#1a1a2e", "#16213e"]} style={styles.flex1}>
+                <SafeAreaView style={[styles.flex1, styles.loadingContainer]}>
+                    <ActivityIndicator size="large" color="#4CAF50" />
+                    <CustomText customStyle={styles.loadingText}>Loading Crypto data...</CustomText>
+                </SafeAreaView>
+            </LinearGradient>
+        );
+    } else if (!bitcoinData) {
+        return (
+            <LinearGradient colors={["#1a1a2e", "#16213e"]} style={styles.flex1}>
+                <SafeAreaView style={[styles.flex1, styles.errorContainer]}>
+                    <Ionicons name="warning-outline" size={50} color="#F44336" />
+                    <CustomText customStyle={styles.errorText}>Error loading data</CustomText>
+                    <TouchableOpacity style={styles.retryButton}>
+                        <CustomText customStyle={styles.retryButtonText}>Try Again</CustomText>
+                    </TouchableOpacity>
+                </SafeAreaView>
+            </LinearGradient>
+        );
+    }
 
     return (
         <LinearGradient colors={["#1a1a2e", "#16213e"]} style={styles.flex1}>
@@ -60,60 +79,60 @@ const Details = () => {
                     <View style={styles.header}>
                         <View style={styles.headerTopRow}>
                             <View style={styles.titleContainer}>
-                                <Text style={styles.coinName}>{bitcoinData.name}</Text>
-                                <Text style={styles.coinSymbol}>{bitcoinData.symbol}</Text>
+                                <CustomText customStyle={styles.coinName}>{bitcoinData?.name}</CustomText>
+                                <CustomText customStyle={styles.coinSymbol}>{bitcoinData?.symbol}</CustomText>
                             </View>
                             <TouchableOpacity onPress={toggleFavorite} style={styles.favoriteButton}>
                                 <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={40} color={isFavorite ? "#FF4081" : "#aaa"} />
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.coinPrice}>${formatNumber(bitcoinData.price_usd)}</Text>
+                        <CustomText customStyle={styles.coinPrice}>${formatNumber(bitcoinData?.price_usd)}</CustomText>
 
                         <View style={styles.priceChangeContainer}>
-                            <Text style={[styles.priceChange, { color: getChangeColor(bitcoinData.percent_change_1h) }]}>1h: {bitcoinData.percent_change_1h}%</Text>
-                            <Text style={[styles.priceChange, { color: getChangeColor(bitcoinData.percent_change_24h) }]}>24h: {bitcoinData.percent_change_24h}%</Text>
-                            <Text style={[styles.priceChange, { color: getChangeColor(bitcoinData.percent_change_7d) }]}>7d: {bitcoinData.percent_change_7d}%</Text>
+                            <CustomText customStyle={[styles.priceChange, { color: getChangeColor(bitcoinData?.percent_change_1h) }]}>1h: {bitcoinData?.percent_change_1h}%</CustomText>
+                            <CustomText customStyle={[styles.priceChange, { color: getChangeColor(bitcoinData?.percent_change_24h) }]}>24h: {bitcoinData?.percent_change_24h}%</CustomText>
+                            <CustomText customStyle={[styles.priceChange, { color: getChangeColor(bitcoinData?.percent_change_7d) }]}>7d: {bitcoinData?.percent_change_7d}%</CustomText>
                         </View>
                     </View>
 
                     <View style={styles.detailsSection}>
-                        <Text style={styles.sectionTitle}>Market Data</Text>
+                        <CustomText customStyle={styles.sectionTitle}>Market Data</CustomText>
 
                         <View style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>Market Cap</Text>
-                            <Text style={styles.detailValue}>{formatLargeNumber(bitcoinData.market_cap_usd)}</Text>
+                            <CustomText customStyle={styles.detailLabel}>Market Cap</CustomText>
+                            <CustomText customStyle={styles.detailValue}>{formatLargeNumber(bitcoinData?.market_cap_usd)}</CustomText>
                         </View>
 
                         <View style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>24h Trading Volume</Text>
-                            <Text style={styles.detailValue}>{formatLargeNumber(bitcoinData.volume24)}</Text>
+                            <CustomText customStyle={styles.detailLabel}>24h Trading Volume</CustomText>
+                            <CustomText customStyle={styles.detailValue}>{formatLargeNumber(bitcoinData?.volume24)}</CustomText>
                         </View>
 
                         <View style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>Circulating Supply</Text>
-                            <Text style={styles.detailValue}>
-                                {formatNumber(bitcoinData.csupply)} {bitcoinData.symbol}
-                            </Text>
+                            <CustomText customStyle={styles.detailLabel}>Circulating Supply</CustomText>
+                            <CustomText customStyle={styles.detailValue}>
+                                {formatNumber(bitcoinData?.csupply)} {bitcoinData?.symbol}
+                            </CustomText>
                         </View>
 
                         <View style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>Total Supply</Text>
-                            <Text style={styles.detailValue}>
-                                {formatNumber(bitcoinData.tsupply)} {bitcoinData.symbol}
-                            </Text>
+                            <CustomText customStyle={styles.detailLabel}>Total Supply</CustomText>
+                            <CustomText customStyle={styles.detailValue}>
+                                {formatNumber(bitcoinData?.tsupply)} {bitcoinData?.symbol}
+                            </CustomText>
                         </View>
 
                         <View style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>Max Supply</Text>
-                            <Text style={styles.detailValue}>
-                                {formatNumber(bitcoinData.msupply)} {bitcoinData.symbol}
-                            </Text>
+                            <CustomText customStyle={styles.detailLabel}>Max Supply</CustomText>
+                            <CustomText customStyle={styles.detailValue}>
+                                {formatNumber(bitcoinData?.msupply)} {bitcoinData?.symbol}
+                            </CustomText>
                         </View>
                     </View>
 
                     <View style={styles.rankBadge}>
-                        <Text style={styles.rankText}>Rank #{bitcoinData.rank}</Text>
+                        <CustomText customStyle={styles.rankText}>Rank #{bitcoinData?.rank}</CustomText>
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -219,6 +238,43 @@ const styles = StyleSheet.create({
         position: "absolute",
         right: 0,
         padding: 10,
+    },
+    loadingContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    loadingText: {
+        color: "white",
+        marginTop: 20,
+        fontSize: 16,
+    },
+    errorContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+    },
+    errorText: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 20,
+    },
+    errorSubText: {
+        color: "#ccc",
+        fontSize: 16,
+        marginTop: 10,
+        textAlign: "center",
+    },
+    retryButton: {
+        marginTop: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: "#4CAF50",
+        borderRadius: 5,
+    },
+    retryButtonText: {
+        color: "white",
+        fontWeight: "bold",
     },
 });
 
