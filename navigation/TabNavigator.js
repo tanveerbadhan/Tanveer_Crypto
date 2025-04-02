@@ -1,37 +1,54 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
 import { Favourites, List, Details } from "../screens";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { LinearGradient } from "expo-linear-gradient";
+import { FONT_WEIGHT } from "../styles/GlobalStyles";
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-
-const ListStack = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="ListMain" component={List} />
-            <Stack.Screen name="Details" component={Details} />
-        </Stack.Navigator>
-    );
-};
 
 const TabNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
-                tabBarIcon: ({ color, size }) => {
+                tabBarBackground: () => <LinearGradient colors={["#1a1a2e", "#16213e"]} style={{ flex: 1 }} />,
+                tabBarStyle: {
+                    backgroundColor: "transparent",
+                    borderTopWidth: 0,
+                    elevation: 0,
+                    position: "absolute",
+                    paddingBottom: 5,
+                },
+                tabBarIcon: ({ color, size, focused }) => {
                     const icons = {
-                        Favourites: "heart",
-                        ListStack: "list",
+                        Favourites: focused ? "heart" : "heart-outline",
+                        List: focused ? "list" : "list-outline",
                     };
                     return <Ionicons name={icons[route.name]} size={size} color={color} />;
                 },
+                tabBarActiveTintColor: "#4CAF50",
+                tabBarInactiveTintColor: "rgba(255, 255, 255, 0.6)",
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontFamily: FONT_WEIGHT.bold,
+                },
             })}
         >
-            <Tab.Screen name="ListStack" component={ListStack} options={{ title: "List" }} />
-            <Tab.Screen name="Favourites" component={Favourites} />
+            <Tab.Screen
+                name="List"
+                component={List}
+                options={{
+                    title: "List",
+                }}
+            />
+            <Tab.Screen
+                name="Favourites"
+                component={Favourites}
+                options={{
+                    title: "My Exchange",
+                }}
+            />
         </Tab.Navigator>
     );
 };

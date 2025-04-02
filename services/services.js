@@ -8,7 +8,6 @@ const fetchCryptoList = async (page = 0, limit = 15) => {
         return response?.data;
     } catch (error) {
         console.error("Error fetching crypto list:", error);
-        throw error;
     }
 };
 

@@ -2,7 +2,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import TabNavigator from "./navigation/TabNavigator";
+import AppNavigator from "./navigation/AppNavigator";
 
 const App = () => {
     const [loaded, error] = useFonts({
@@ -24,7 +24,7 @@ const App = () => {
 
     return (
         <NavigationContainer>
-            <TabNavigator />
+            <AppNavigator />
         </NavigationContainer>
     );
 };
