@@ -1,12 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, FlatList, View, RefreshControl, ActivityIndicator } from "react-native";
 import CustomText from "../components/CustomText";
 import { FONT_WEIGHT } from "../styles/GlobalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVICES } from "../services";
+import { debounce } from "../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { CryptoCard } from "../components";
-import { useFocusEffect } from "@react-navigation/native";
 
 const List = ({ navigation }) => {
     const [list, setList] = useState([]);
@@ -14,13 +14,11 @@ const List = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchList();
-        }, [])
-    );
+    useEffect(() => {
+        fetchList();
+    }, []);
 
-    const fetchList = async () => {
+    const fetchList = debounce(async () => {
         const data = await SERVICES.fetchCryptoList(page.current);
         if (page.current === 0) {
             setList(data);
@@ -32,7 +30,7 @@ const List = ({ navigation }) => {
         }
         page.current = page.current + 1;
         setRefreshing(false);
-    };
+    });
 
     const onRefresh = () => {
         setRefreshing(true);
