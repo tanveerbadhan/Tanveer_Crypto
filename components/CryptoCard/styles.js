@@ -15,6 +15,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 10,
     },
+    headerRight: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
     title: {
         fontSize: 20,
         fontFamily: FONT_WEIGHT.black,
@@ -46,11 +50,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 1,
         borderColor: "gold",
+        marginRight: 10,
     },
     rankText: {
         color: "gold",
         fontWeight: "bold",
         fontSize: 14,
+    },
+    favoriteButton: {
+        padding: 5,
     },
 });
 

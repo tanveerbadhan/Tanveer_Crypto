@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, FlatList, View, RefreshControl, ActivityIndicator } from "react-native";
 import CustomText from "../components/CustomText";
 import { FONT_WEIGHT } from "../styles/GlobalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVICES } from "../services";
-import { debounce } from "../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { CryptoCard } from "../components";
+import { useFocusEffect } from "@react-navigation/native";
 
 const List = ({ navigation }) => {
     const [list, setList] = useState([]);
@@ -14,11 +14,13 @@ const List = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchList();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchList();
+        }, [])
+    );
 
-    const fetchList = debounce(async () => {
+    const fetchList = async () => {
         const data = await SERVICES.fetchCryptoList(page.current);
         if (page.current === 0) {
             setList(data);
@@ -30,7 +32,7 @@ const List = ({ navigation }) => {
         }
         page.current = page.current + 1;
         setRefreshing(false);
-    });
+    };
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -48,7 +50,7 @@ const List = ({ navigation }) => {
                     contentContainerStyle={styles.contentContainerStyle}
                     keyExtractor={(item) => item?.id?.toString()}
                     renderItem={({ item }) => {
-                        return <CryptoCard data={item} />;
+                        return <CryptoCard data={item} showFav={false} />;
                     }}
                     ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#4CAF50"]} tintColor={"#4CAF50"} />}

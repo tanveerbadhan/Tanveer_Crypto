@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { SERVICES } from "../services";
 import { CustomText } from "../components";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Details = ({ route }) => {
     const { id } = route?.params ?? {};
@@ -15,6 +16,31 @@ const Details = ({ route }) => {
     useEffect(() => {
         fetchCrypto();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchMyFavourites();
+        }, [])
+    );
+
+    const fetchMyFavourites = async () => {
+        const favourites = await SERVICES.fetchMyFavourites();
+        setIsFavorite(favourites.filter((obj) => obj?.id === id).length > 0);
+    };
+
+    const handleFavouritePress = async () => {
+        if (!isFavorite) {
+            const addToFavourites = await SERVICES.addToFavourites(bitcoinData);
+            if (addToFavourites) {
+                setIsFavorite(true);
+            }
+        } else {
+            const removeFromFavourites = await SERVICES.removeFromFavourites(id);
+            if (removeFromFavourites) {
+                setIsFavorite(false);
+            }
+        }
+    };
 
     const fetchCrypto = async () => {
         const data = await SERVICES.fetchCrypto(id);
@@ -43,10 +69,6 @@ const Details = ({ route }) => {
 
     const getChangeColor = (change) => {
         return parseFloat(change) >= 0 ? "#4CAF50" : "#F44336";
-    };
-
-    const toggleFavorite = () => {
-        setIsFavorite(!isFavorite);
     };
 
     if (isLoading) {
@@ -82,7 +104,7 @@ const Details = ({ route }) => {
                                 <CustomText customStyle={styles.coinName}>{bitcoinData?.name}</CustomText>
                                 <CustomText customStyle={styles.coinSymbol}>{bitcoinData?.symbol}</CustomText>
                             </View>
-                            <TouchableOpacity onPress={toggleFavorite} style={styles.favoriteButton}>
+                            <TouchableOpacity onPress={handleFavouritePress} style={styles.favoriteButton}>
                                 <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={40} color={isFavorite ? "#FF4081" : "#aaa"} />
                             </TouchableOpacity>
                         </View>
